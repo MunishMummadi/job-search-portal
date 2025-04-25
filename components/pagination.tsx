@@ -11,6 +11,7 @@ export default function Pagination({
   location,
   company,
   skill,
+  minSalary,
 }: {
   currentPage: number
   totalPages: number
@@ -18,6 +19,7 @@ export default function Pagination({
   location: string
   company: string
   skill: string
+  minSalary: string
 }) {
   const router = useRouter()
 
@@ -29,6 +31,7 @@ export default function Pagination({
     if (location) params.set("location", location)
     if (company) params.set("company", company)
     if (skill) params.set("skill", skill)
+    if (minSalary) params.set("minSalary", minSalary)
 
     params.set("page", page.toString())
 
@@ -128,4 +131,3 @@ export default function Pagination({
     </div>
   )
 }
-

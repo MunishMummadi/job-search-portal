@@ -17,6 +17,7 @@ export default function JobFilters({
   selectedCompany,
   selectedSkill,
   query,
+  selectedMinSalary,
 }: {
   locations: string[]
   companies: string[]
@@ -25,6 +26,7 @@ export default function JobFilters({
   selectedCompany: string
   selectedSkill: string
   query: string
+  selectedMinSalary: string
 }) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -33,6 +35,7 @@ export default function JobFilters({
   const [location, setLocation] = useState(selectedLocation)
   const [company, setCompany] = useState(selectedCompany)
   const [skill, setSkill] = useState(selectedSkill)
+  const [minSalary, setMinSalary] = useState(selectedMinSalary)
 
   // Update the URL with the current filters
   const updateFilters = useCallback(() => {
@@ -42,12 +45,13 @@ export default function JobFilters({
     if (location) params.set("location", location)
     if (company) params.set("company", company)
     if (skill) params.set("skill", skill)
+    if (minSalary) params.set("minSalary", minSalary)
 
     // Always reset to page 1 when filters change
     params.set("page", "1")
 
     router.push(`/?${params.toString()}`)
-  }, [searchQuery, location, company, skill, router])
+  }, [searchQuery, location, company, skill, minSalary, router])
 
   // Handle search form submission
   const handleSearch = (e: React.FormEvent) => {
@@ -61,18 +65,38 @@ export default function JobFilters({
     setLocation("")
     setCompany("")
     setSkill("")
+    setMinSalary("")
     router.push("/")
   }
 
-  // Update filters when select values change
+  // Update filters when select values change OR minSalary changes
   useEffect(() => {
-    // Only update if the values have changed from the URL
-    if (location !== selectedLocation || company !== selectedCompany || skill !== selectedSkill) {
-      updateFilters()
+    // Only update if the values have changed from the URL or minSalary is updated
+    if (
+      location !== selectedLocation ||
+      company !== selectedCompany ||
+      skill !== selectedSkill ||
+      minSalary !== selectedMinSalary
+    ) {
+      // Debounce the update slightly for the salary input
+      const timer = setTimeout(() => {
+        updateFilters()
+      }, 300) // Adjust debounce time as needed
+      return () => clearTimeout(timer)
     }
-  }, [location, company, skill, selectedLocation, selectedCompany, selectedSkill, updateFilters])
+  }, [
+    location,
+    company,
+    skill,
+    minSalary,
+    selectedLocation,
+    selectedCompany,
+    selectedSkill,
+    selectedMinSalary,
+    updateFilters,
+  ])
 
-  const hasActiveFilters = searchQuery || location || company || skill
+  const hasActiveFilters = searchQuery || location || company || skill || minSalary
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-4">
@@ -145,6 +169,18 @@ export default function JobFilters({
             </SelectContent>
           </Select>
         </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700 mb-1 block">Minimum Salary ($)</label>
+          <Input
+            type="number"
+            placeholder="e.g., 80000"
+            value={minSalary}
+            onChange={(e) => setMinSalary(e.target.value)}
+            min="0"
+            step="1000"
+          />
+        </div>
       </div>
 
       {hasActiveFilters && (
@@ -162,4 +198,3 @@ export default function JobFilters({
     </div>
   )
 }
-

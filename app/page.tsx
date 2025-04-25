@@ -14,6 +14,7 @@ export default async function Home({
     company?: string
     page?: string
     skill?: string
+    minSalary?: string
   }
 }) {
   const jobs = await getJobs()
@@ -22,16 +23,23 @@ export default async function Home({
   const company = searchParams.company || ""
   const skill = searchParams.skill || ""
   const page = Number(searchParams.page) || 1
+  const minSalary = searchParams.minSalary || ""
 
   return (
     <main className="min-h-screen bg-gray-50">
       <JobSearchHeader />
       <div className="container mx-auto px-4 py-8">
         <Suspense fallback={<div className="flex justify-center py-12">Loading jobs...</div>}>
-          <JobListings query={query} location={location} company={company} skill={skill} page={page} />
+          <JobListings
+            query={query}
+            location={location}
+            company={company}
+            skill={skill}
+            minSalary={minSalary}
+            page={page}
+          />
         </Suspense>
       </div>
     </main>
   )
 }
-
